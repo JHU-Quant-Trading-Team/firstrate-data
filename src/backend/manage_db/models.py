@@ -6,7 +6,8 @@ class Data(models.Model):
     last_updated = models.DateTimeField()
     file_path = models.CharField(max_length=256)
     last_date = models.DateTimeField()
-    url_link = models.CharField(max_length=256)
+    download_link = models.CharField(max_length=256)
+    update_link = models.CharField(max_length=256)
     
     
     def update(self):
