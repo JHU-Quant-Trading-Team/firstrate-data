@@ -24,7 +24,8 @@ class Data(models.Model):
         Gets the last datetime of the remote data.
         """
         # Download remote updated data
-        # 
+        
+        # Get the remote time 
         pass
     
     
