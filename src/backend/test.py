@@ -5,4 +5,6 @@ crypto = DataBundle(name='crypto',
                     update_link='https://firstratedata.com/datafile/ZpKb77M8hkSKYkSFg8mY-w/13790',
                     root_path='/Users/jacobfeitelberg/Desktop/firstrate-data/data/crypto/')
 
-print(crypto.download())
+crypto.save()
+# crypto.download()
+crypto.update()

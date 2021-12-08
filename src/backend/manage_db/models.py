@@ -2,6 +2,7 @@ from django.db import models
 from django.utils import timezone
 import urllib.request
 import os
+from glob import glob
 import zipfile
 import shutil
 
@@ -23,7 +24,7 @@ class DataBundle(models.Model):
         
         # Download remote data
         zip_file_name = self.root_path + 'temp.zip'
-        urllib.request.urlretrieve(self.update_link, zip_file_name)
+        urllib.request.urlretrieve(self.download_link, zip_file_name)
         
         # Unzip remote data
         with zipfile.ZipFile(zip_file_name, 'r') as zip_ref:
@@ -31,6 +32,12 @@ class DataBundle(models.Model):
             
         # Remove zip file
         os.remove(zip_file_name)
+        
+        # Add Data objects if they do not already exist
+        for file_path in glob(self.root_path + '*.txt'):
+            file_name = os.path.basename(file_path)
+            ticker = file_name[:file_name.find('_')]
+            Data.objects.update_or_create(ticker=ticker, file_name=file_name, bundle=self)
     
     
     def update(self):
@@ -56,7 +63,14 @@ class DataBundle(models.Model):
         ## Use the Data update method to update each file
         ## This will do checking and only add lines if they don't exist already
         for data in data_objects:
-            data.update(temp_root + data.file_name)
+            # Determine which remote file corresponds
+            # There should be no files with the same ticker
+            # We need to put this is a try-catch block because some files might not have updates
+            try:
+                remote_file = glob(temp_root + data.ticker + '_*')[0]
+                data.update(remote_file)
+            except Exception:
+                pass
         
         # Delete temporary folder
         shutil.rmtree(temp_root)
